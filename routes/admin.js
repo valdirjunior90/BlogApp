@@ -103,7 +103,12 @@ router.post("/categorias/deletar",(req,res)=>{
 })
 
 router.get("/postagens",(req,res)=>{
-    res.render("admin/postagens")
+    Postagem.find().populate("categoria").sort({data:'desc'}).then((postagens)=>{
+        res.render("admin/postagens", {postagens: postagens})
+    }).catch((err)=>{
+        req.flash("error_msg","Houve um erro ao listar as postagens")
+        res.redirect("/admin")
+    })
 })
 
 router.get("/postagens/add",(req,res)=>{
@@ -143,6 +148,56 @@ router.post("/postagens/nova",(req,res)=>{
             res.redirect("/admin/postagens")
         })
     }
+})
+
+router.post("/postagens/deletar",(req,res)=>{
+    Postagem.remove({_id: req.body.id}).then(()=>{
+        req.flash("success_msg","Postagem deletada com sucesso!")
+        res.redirect("/admin/postagens")
+    }).catch((err)=>{
+        req.flash("error_msg","Houve um erro ao deletar a postagem!")
+        res.redirect("/admin/postagens")
+    })
+})
+
+router.get("/postagens/edit/:id",(req,res)=>{
+    Postagem.findOne({_id: req.params.id}).then((postagens)=>{
+        Categoria.find().then((categorias)=>{
+            res.render("admin/editpostagem",{postagens:postagens, categorias: categorias})
+        }).catch((err)=>{
+            req.flash("error_msg","Nenhuma categoria encontrada, crie uma")
+            res.redirect("/admin/postagens")
+        })
+        
+    }).catch((err)=>{
+        req.flash("error_msg","Esta postagem não existe não existe")
+        res.redirect("/admin/postagens")
+    })
+    
+})
+
+router.post("/postagens/edit",(req,res)=>{
+    Postagem.findOne({_id: req.body.id}).then((postagens)=>{
+        
+        postagens.titulo = req.body.titulo
+        postagens.slug = req.body.slug
+        postagens.descricao = req.body.descricao
+        postagens.conteudo = req.body.conteudo
+        postagens.categoria = req.body.categoria
+
+        postagens.save().then(()=>{
+            req.flash("success_msg","Categoria editada com sucesso!")
+            res.redirect("/admin/postagens")
+        }).catch((err)=>{
+            req.flash("error_msg","Houve um erro interno ao salvar a edição da categoria")
+            res.redirect("/admin/postagens")
+        })
+
+    }).catch((err)=>{
+        req.flash("error_msg", "Houve um erro ao editar a postagem")
+        res.redirect("/admin/postagens")
+    })
+
 })
 
 

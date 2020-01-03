@@ -45,7 +45,7 @@
         app.set('view engine','handlebars');
     //Mongoose
     mongoose.Promise = global.Promise;
-        mongoose.connect("mongodb://junitroll:94219489@mongo_blogapp-prod:27017/blogapp-prod", {useNewUrlParser: true, useUnifiedTopology: true}).then(()=>{
+        mongoose.connect("mongodb://junitroll:j94219489@mongo_blogapp-prod:27017/blogapp-prod", {useNewUrlParser: true, useUnifiedTopology: true}).then(()=>{
             console.log("Conectado ao Mongo!")
         }).catch((err)=>{
             console.log("Erro ao se conectar: "+err)
